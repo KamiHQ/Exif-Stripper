@@ -51,9 +51,17 @@ module.exports = (function(){
 
 		    xhr.onload = function( e ) {
 		        var dataView = new DataView(this.response)
-		        var blobUrl = _removeExif(this.response, dataView)
-		        imageData.resolve({url: blobUrl})
+            try {
+              var blobUrl = _removeExif(this.response, dataView);
+              imageData.resolve({url: blobUrl});
+            } catch (e) {
+              imageData.reject(e);
+            }
 		    }
+
+        xhr.onerror = function( e ) {
+          imageData.reject(e);
+        }
 
 		    xhr.send();
 		    return imageData.promise()
